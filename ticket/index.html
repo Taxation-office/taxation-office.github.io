@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticketmaster - Popular Events in California</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Fixed Header Styling */
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgb(39, 41, 53);
+            color: white;
+            padding: 8px 0;
+            text-align: center;
+            font-size: 20px;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .fixed-header img {
+            height: 16px;
+        }
+
+        .fixed-header .circle {
+            position: absolute;
+            right: 15px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(39, 41, 53);
+        }
+
+        .fixed-header .circle img {
+            width: 16px;
+            height: 16px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* Main Header Styling */
+        header {
+            background-color: rgb(39, 41, 53);
+            padding: 80px 15px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        header h1 {
+            color: white;
+        }
+
+        /* Horizontal and Vertical Line */
+        .search-container {
+            position: relative;
+            width: 100%;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        .horizontal-line {
+            width: 100%;
+            height: 1px;
+            background-color: white;
+            margin-top: 10px;
+        }
+
+        .vertical-line {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 20px;
+            width: 1px;
+            background-color: white;
+        }
+
+        /* Search Box Styling */
+        .search-box {
+            position: relative;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .search-box input[type="text"] {
+            padding: 10px 36px 10px 10px;
+            border-radius: 1px;
+            border: none;
+            width: 100%;
+            font-size: 14px;
+            background-color: white;
+            height: 36px;
+        }
+
+        .search-box .fa-search {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #555;
+            padding: 6px;
+            color: #024ce0;
+            border-radius: 50%;
+        }
+
+        /* Text on either side of the vertical line */
+        .vertical-line-text {
+            position: absolute;
+            top: -16px;
+            color: white;
+            font-size: 14px;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vertical-line-text.left {
+            left: 20%;
+            transform: translateX(-50%);
+        }
+
+        .vertical-line-text.right {
+            right: 40%;
+            transform: translateX(50%);
+        }
+
+        /* Location Arrow and Calendar Icons */
+        .vertical-line-text .icon {
+            color: #024ce0;
+        }
+
+        /* Location Icon */
+        .vertical-line-text.left .fa-location-arrow {
+            position: absolute;
+            right: -16px;
+            margin-right: 120px;
+            color: #024ce0;
+        }
+
+        /* Calendar Icon */
+        .vertical-line-text.right .fa-calendar-alt {
+            margin-left: -90px;
+            color: #024ce0;
+        }
+
+        /* Menu Bar */
+        .menu-bar {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 8px;
+            margin-top: 15px;
+        }
+
+        .menu-bar div {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 6px 12px;
+            margin-right: 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            border: 1px solid white;
+            font-size: 12px;
+        }
+
+        .menu-bar div:hover {
+            background-color: #1a1a1a;
+            color: white;
+            border: 1px solid white;
+        }
+
+        .hidden-family {
+            display: inline-block;
+            visibility: hidden;
+        }
+
+        .menu-bar:hover .hidden-family {
+            visibility: visible;
+        }
+
+        /* Upcoming Events Section */
+        .events-section {
+            padding: 0 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+        }
+
+        .event-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            position: relative;
+            margin: 0 8px;
+        }
+
+        .event-card.first-event {
+            border-radius: 0;
+            margin: 0;
+        }
+
+        .event-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .event-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .event-card .event-details {
+            padding: 1px;
+        }
+
+        .event-card h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .event-card p {
+            color: #555;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .event-card a {
+            text-decoration: none;
+            font-weight: bold;
+            color: #024ce0;
+            padding: 6px 12px;
+            background-color: #f7f7f7;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+
+        .event-card a:hover {
+            background-color: #024ce0;
+            color: white;
+        }
+
+        /* Dark overlay on the first event */
+        .event-card.first-event::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+
+        .event-card.first-event .event-details {
+            position: relative;
+            z-index: 2;
+            display: none;
+        }
+
+        /* Updated color for the first event button */
+        .event-card.first-event .overlay-button {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            z-index: 3;
+            background-color: #024ce0;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 1px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .event-card.first-event .overlay-button:hover {
+            background-color: #003bb3;
+        }
+
+        /* Event name above the button */
+        .event-card.first-event .overlay-event-name {
+            position: absolute;
+            bottom: 70px;
+            left: 15px;
+            z-index: 3;
+            color: white;
+            font-size: 16px;
+            font-weight: normal;
+            text-align: left;
+        }
+
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            color: #555;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .bottom-nav button {
+            background: none;
+            border: none;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: inherit;
+            transition: color 0.3s ease;
+            font-size: 12px;
+        }
+
+        .bottom-nav button i {
+            font-size: 16px;
+        }
+
+        .bottom-nav button:hover,
+        .bottom-nav button:focus {
+            color: #024ce0;
+        }
+
+        /* Add a tilted ticket icon for "My Events" */
+        .bottom-nav button .fa-ticket-alt {
+            transform: rotate(-45deg);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            header input[type="text"] {
+                width: 100%;
+                margin-top: 8px;
+            }
+
+            .search-container {
+                width: 100%;
+                text-align: center;
+                margin-top: 15px;
+            }
+
+            .horizontal-line {
+                width: 100%;
+                margin-bottom: 4px;
+            }
+
+            .vertical-line {
+                top: -20px;
+                left: 50%;
+                transform: translateX(-50%);
+                height: 20px;
+                width: 1px;
+            }
+
+            .events-section {
+                padding: 0;
+                grid-template-columns: 1fr;
+            }
+
+            .event-card.first-event {
+                width: 100%;
+                margin-top: 0;
+            }
+
+            .bottom-nav {
+                display: flex;
+                justify-content: space-around;
+                padding: 15px 0;
+            }
+
+            .menu-bar {
+                margin-top: 8px;
+                padding: 8px;
+            }
+
+            /* Make the menu items scroll horizontally */
+            .menu-bar {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Header -->
+    <div class="fixed-header">
+        <img src="https://cdn.freebiesupply.com/logos/large/2x/ticketmaster-5-logo-black-and-white.png" alt="Ticketmaster Logo" />
+        <div class="circle">
+            <img src="https://static.vecteezy.com/system/resources/thumbnails/012/616/631/small_2x/american-flag-us-flag-usa-flag-on-the-circle-shape-format-png.png" alt="USA Flag" />
+        </div>
+    </div>
+
+    <!-- Main Header -->
+    <header>
+        <div></div>
+        <div class="search-container">
+            <div class="vertical-line-text left">
+                Los Angeles, CA
+                <i class="fas fa-location-arrow icon"></i>
+            </div>
+            <div class="vertical-line-text right">
+                All Dates
+                <i class="fas fa-calendar-alt icon"></i>
+            </div>
+            <div class="vertical-line"></div>
+            <div class="horizontal-line"></div>
+            <div class="search-box">
+                <input type="text" placeholder="Search for events, artists, or venues" />
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+
+        <!-- Menu Bar -->
+        <div class="menu-bar">
+            <div onclick="location.href='concerts.html'">Concerts</div>
+            <div onclick="location.href='sports.html'">Sports</div>
+            <div onclick="location.href='arts.html'">Arts, Theater & Comedy</div>
+            <div onclick="location.href='family.html'">Family</div>
+        </div>
+    </header>
+
+    <!-- Upcoming Events Section -->
+    <div id="events" class="events-section">
+        <!-- Dynamic event list will be inserted here -->
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <button onclick="location.href='index.html'">
+            <i class="fas fa-search"></i>
+            Discover
+        </button>
+        <button onclick="location.href='foryou.html'">
+            <i class="fas fa-heart"></i>
+            For You
+        </button>
+        <button onclick="location.href='myevents.html'">
+            <i class="fas fa-ticket-alt"></i>
+            My Events
+        </button>
+        <button onclick="location.href='sell.html'">
+            <i class="fas fa-money-bill-wave"></i>
+            Sell
+        </button>
+        <button onclick="location.href='account.html'">
+            <i class="fas fa-user-circle"></i>
+            My Account
+        </button>
+    </div>
+
+    <script>
+        // Your Ticketmaster API Key
+        const apiKey = 'YX5LnzEhz9FFOLNT85735JPdwZAwVAHZ';
+
+        // Use location parameters to focus on California cities and a radius for local events
+        const californiaCity = 'Los Angeles';
+        const apiUrl = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${apiKey}&classificationName=Music&city=${californiaCity}&radius=50&countryCode=US&sort=date,asc`;
+
+        // Fetch event data from Ticketmaster API
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                const eventsContainer = document.getElementById('events');
+                const events = data._embedded.events;
+
+                // Display events
+                events.forEach((event, index) => {
+                    const eventCard = document.createElement('div');
+                    eventCard.classList.add('event-card');
+                    if (index === 0) {
+                        eventCard.classList.add('first-event');
+                    }
+
+                    // Event image
+                    const eventImage = document.createElement('img');
+                    eventImage.src = event.images[0]?.url || 'https://via.placeholder.com/300x150';
+
+                    // Event details
+                    const eventDetails = document.createElement('div');
+                    eventDetails.classList.add('event-details');
+
+                    const eventName = document.createElement('h3');
+                    eventName.textContent = event.name;
+                    eventDetails.appendChild(eventName);
+
+                    const eventDate = document.createElement('p');
+                    eventDate.textContent = `Date: ${event.dates.start.localDate}`;
+                    eventDetails.appendChild(eventDate);
+
+                    const eventLocation = document.createElement('p');
+                    eventLocation.textContent = `Location: ${event._embedded.venues[0]?.name}`;
+                    eventDetails.appendChild(eventLocation);
+
+                    const eventLink = document.createElement('a');
+                    eventLink.href = event.url;
+                    eventLink.target = '_blank';
+                    eventLink.textContent = 'Buy Tickets';
+                    eventDetails.appendChild(eventLink);
+
+                    eventCard.appendChild(eventImage);
+                    eventCard.appendChild(eventDetails);
+
+                    // Add overlay button and event name for the first event
+                    if (index === 0) {
+                        const overlayEventName = document.createElement('div');
+                        overlayEventName.classList.add('overlay-event-name');
+                        overlayEventName.textContent = event.name;
+                        eventCard.appendChild(overlayEventName);
+
+                        const overlayButton = document.createElement('a');
+                        overlayButton.classList.add('overlay-button');
+                        overlayButton.href = event.url;
+                        overlayButton.target = '_blank';
+                        overlayButton.textContent = 'Find Tickets';
+                        eventCard.appendChild(overlayButton);
+                    }
+
+                    eventsContainer.appendChild(eventCard);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching events:', error);
+                const errorElement = document.createElement('p');
+                errorElement.textContent = 'There was an error fetching the events. Please try again later.';
+                document.body.appendChild(errorElement);
+            });
+    </script>
+</body>
+</html>
