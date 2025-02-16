@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticketmaster - Popular Events in California</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Fixed Header Styling */
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgb(39, 41, 53);
+            color: white;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 40px;
+            z-index: 10;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .fixed-header .cancel-icon {
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .fixed-header .header-title {
+            font-size: 16px;
+            color: white;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .fixed-header .circle {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(39, 41, 53);
+        }
+
+        .fixed-header .circle img {
+            width: 18px;
+            height: 18px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .fixed-header .help-text {
+            font-size: 14px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Main Box Styling */
+        .main-box {
+            margin-top: 70px;
+            margin-left: 20px;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            height: calc(100vh - 140px);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        /* Color sections inside the main box */
+        .top-color {
+            background-color: #016be1;
+            height: 30px;
+        }
+
+        .middle-color {
+            background-color: #025ee5;
+            height: 70px;
+        }
+
+        .white-space {
+            background-color: white;
+            height: calc(100% - 200px);
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bottom-color {
+            background-color: #016be1;
+            height: 30px;
+        }
+
+        /* Verified Fan Offer Text */
+        .verified-fan-offer {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: ;
+            color: white;
+            text-align: center;
+            z-index: 1;
+        }
+
+        /* SEC ROW SEAT Text */
+        .sec-row-seat {
+            position: absolute;
+            top: 12%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            z-index: 1;
+        }
+
+        /* Ticketmaster Verified Text */
+        .ticketmaster-verified {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-style: italic;
+            color: white;
+            z-index: 1;
+        }
+
+        /* Event Banner Styling */
+        .event-banner {
+            width: 100%;
+            height: 50%;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .event-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .event-banner::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
+        }
+
+        /* Event details container */
+        .event-details {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            z-index: 2;
+        }
+
+        .event-details h2 {
+            font-size: 14px;
+            margin: 0 0 5px 0;
+            
+        }
+
+        .event-details p {
+            font-size: 14px;
+            margin: 3px 0;
+        }
+
+        .event-details .tickets {
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        /* Bottom Content Styling */
+        .bottom-content {
+            height: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .upper-level-text {
+            font-size: 14px;
+            font-weight: ;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .view-ticket-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 200px;
+            height: 50px;
+            background-color: #016be1;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .view-ticket-button i {
+            margin-right: 10px;
+        }
+
+        .ticket-details-text {
+            font-size: 12px;
+            font-weight: ;
+            text-align: center;
+        }
+
+        /* Mobile View */
+        @media (max-width: 768px) {
+            .view-ticket-button {
+                width: 150px;
+                height: 40px;
+                font-size: 12px;
+            }
+        }
+
+        /* Transfer Popup Styling */
+        .transfer-popup {
+            position: fixed;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background-color: white;
+            color: black;
+            display: none;
+            justify-content: flex-start;
+            padding: 20px;
+            transition: top 0.5s ease-in-out;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+        }
+
+        .transfer-popup.active {
+            display: flex;
+            top: 50%;
+        }
+
+        .popup-content {
+            width: 100%;
+            text-align: center;
+        }
+
+        .popup-text {
+            margin: 8px 0;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .horizontal-line, .horizontal-line-2 {
+            border-top: 1px solid #000;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .cube-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .cube {
+            width: 30%;
+            padding-bottom: 30%;
+            background-color: white;
+            border-radius: 10px;
+            border: 2px solid blue;
+            position: relative;
+        }
+
+        .cube .colored-part {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background-color: #016be1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .cube .checkbox {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #016be1;
+            cursor: pointer;
+        }
+
+        .cube .checkbox.selected {
+            background-color: #016be1;
+        }
+
+        .section-text {
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .tickets-text {
+            font-size: 14px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .line-below-cubes {
+            border-top: 1px solid #000;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .gray-box {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: #dcdcdc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 20;
+        }
+
+        .gray-box a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .gray-box a.disabled {
+            pointer-events: none;
+            color: gray;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .button-container button {
+            width: 40%;
+            padding: 10px 20px;
+            font-size: 14px;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .transfer {
+            background-color: #024ce0;
+            color: white;
+        }
+
+        .transfer:hover {
+            background-color: #023c8e;
+        }
+
+        .sell {
+            background-color: #dcdcdc;
+            color: #555;
+        }
+
+        .sell:hover {
+            background-color: #c5c5c5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Header -->
+    <div class="fixed-header">
+        <a href="myevents.html" class="cancel-icon">
+            <i class="fas fa-times"></i>
+        </a>
+        <div class="header-title">
+            My Tickets
+            <div class="circle">
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/012/616/631/small_2x/american-flag-us-flag-usa-flag-on-the-circle-shape-format-png.png" alt="USA Flag" />
+            </div>
+        </div>
+        <div class="help-text">Help</div>
+    </div>
+
+    <!-- Main Box -->
+    <div class="main-box">
+        <div class="top-color"></div>
+        <div class="verified-fan-offer">Verified Fan Offer</div>
+        <div class="sec-row-seat">
+            <span>SEC</span>
+            <span>ROW</span>
+            <span>SEAT</span>
+        </div>
+        <div class="ticketmaster-verified">ticketmaster ®verified</div>
+        <div class="middle-color"></div>
+        <div class="white-space">
+            <!-- Event Banner (Top Half) -->
+            <div class="event-banner" id="event-banner">
+                <img src="" alt="Event Image">
+                <div class="event-details">
+                    <h2>Event Title</h2>
+                    <p>Event Date • Event Venue</p>
+                    <p class="tickets">2 Tickets</p>
+                </div>
+            </div>
+
+            <!-- Bottom Content (Bottom Half) -->
+            <div class="bottom-content">
+                <div class="upper-level-text">UPPER LEVEL</div>
+                <a href="ticketdetails.html" class="view-ticket-button">
+                    <i class="fas fa-qrcode"></i>
+                    View Ticket
+                </a>
+                <div class="ticket-details-text">Ticket Details</div>
+            </div>
+        </div>
+        <div class="bottom-color"></div>
+    </div>
+
+    <!-- Transfer Popup -->
+    <div class="transfer-popup" id="transferPopup">
+        <div class="popup-content">
+            <div class="popup-text">SELECT TICKETS TO TRANSFER</div>
+            <div class="horizontal-line"></div>
+            <div class="horizontal-line-2"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="section-text">Sec 208, Row A</div>
+                <div class="tickets-text">2 Tickets</div>
+            </div>
+            <div class="cube-container">
+                <div class="cube">
+                    <div class="colored-part">SEAT</div>
+                    <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                </div>
+                <div class="cube">
+                    <div class="colored-part">SEAT</div>
+                    <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                </div>
+                <div class="cube">
+                    <div class="colored-part">SEAT</div>
+                    <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                </div>
+            </div>
+            <div class="line-below-cubes"></div>
+        </div>
+        <div class="gray-box">
+            <span id="selectedCount">0 Selected</span>
+            <a id="transferLink" href="#" class="disabled">TRANSFER TO</a>
+        </div>
+    </div>
+
+    <!-- Button Container -->
+    <div class="button-container">
+        <button class="transfer" onclick="showTransferPopup()">Transfer</button>
+        <button class="sell">Sell</button>
+    </div>
+
+    <script>
+        // Fetch Beyoncé event data from Ticketmaster API
+        async function fetchEvent() {
+            const apiKey = 'YX5LnzEhz9FFOLNT85735JPdwZAwVAHZ'; // Replace with your Ticketmaster API key
+            const keyword = 'Beyoncé'; // Search for Beyoncé events
+            const url = `https://app.ticketmaster.com/discovery/v2/events.json?keyword=${keyword}&apikey=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data._embedded && data._embedded.events) {
+                    const event = data._embedded.events[0]; // Get the first event
+                    const eventBanner = document.getElementById('event-banner');
+
+                    // Display event banner with details
+                    eventBanner.innerHTML = `
+                        <img src="${event.images[0].url}" alt="${event.name}">
+                        <div class="event-details">
+                            <h2>${event.name}</h2>
+                            <p>${event.dates.start.localDate} • ${event._embedded.venues[0].name}</p>
+                            <p class="tickets">2 Tickets</p>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('event-banner').innerHTML = `<p>No events found for Beyoncé.</p>`;
+                }
+            } catch (error) {
+                console.error('Error fetching event data:', error);
+                document.getElementById('event-banner').innerHTML = `<p>Failed to load event details.</p>`;
+            }
+        }
+
+        // Fetch event data when the page loads
+        fetchEvent();
+
+        // Show Transfer Popup
+        function showTransferPopup() {
+            document.getElementById('transferPopup').classList.add('active');
+        }
+
+        // Toggle Checkbox
+        let selectedCount = 0;
+        function toggleCheckbox(checkbox) {
+            checkbox.classList.toggle('selected');
+            selectedCount = document.querySelectorAll('.checkbox.selected').length;
+            document.getElementById('selectedCount').textContent = `${selectedCount} Selected`;
+
+            // Enable or disable the TRANSFER TO link
+            const transferLink = document.getElementById('transferLink');
+            if (selectedCount > 0) {
+                transferLink.href = "transferform.html";
+                transferLink.classList.remove('disabled');
+            } else {
+                transferLink.href = "#";
+                transferLink.classList.add('disabled');
+            }
+        }
+    </script>
+</body>
+</html>
