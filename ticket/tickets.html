@@ -12,14 +12,15 @@
             padding: 0;
             box-sizing: border-box;
         }
+        html, body {
+            height: 100%;
+            overflow: hidden; /* Prevent scrolling */
+        }
         body {
             font-family: Arial, sans-serif;
             background-color: white;
-            padding: 0;
-            margin: 0;
             display: flex;
             flex-direction: column;
-            height: 100vh;
         }
 
         /* Fixed Header Styling */
@@ -83,11 +84,11 @@
 
         /* Main Box Styling */
         .main-box {
-            margin-top: 70px;
+            margin-top: 50px; /* Adjusted for fixed header */
             margin-left: 20px;
             margin-right: 20px;
-            margin-bottom: 20px;
-            height: calc(100vh - 140px);
+            margin-bottom: 70px; /* Adjusted for button container */
+            height: calc(100vh - 120px); /* Fit within viewport */
             position: relative;
             display: flex;
             flex-direction: column;
@@ -108,7 +109,6 @@
 
         .white-space {
             background-color: white;
-            height: calc(100% - 200px);
             flex-grow: 1;
             position: relative;
             display: flex;
@@ -396,11 +396,15 @@
         }
 
         .button-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
-            margin-left: 10px;
-            margin-right: 10px;
+            padding: 10px 20px;
+            background-color: white;
+            z-index: 10;
         }
 
         .button-container button {
