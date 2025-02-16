@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticketmaster - Popular Events in California</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+
+        /* Fixed Header Styling */
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgb(39, 41, 53);
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 16px;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            height: 40px; /* Fixed height for the header */
+        }
+
+        .fixed-header .circle {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(39, 41, 53);
+        }
+
+        .fixed-header .circle img {
+            width: 18px;
+            height: 18px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .fixed-header .help-text {
+            position: absolute;
+            right: 20px;
+            font-size: 14px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* New Top Bar Styling */
+        .new-top-bar {
+            position: fixed;
+            top: 40px; /* Starts below the fixed header */
+            left: 0;
+            width: 100%;
+            background-color: #024ce0; /* Matches the icon color */
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+            z-index: 9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 40px; /* Fixed height for the new top bar */
+        }
+
+        .new-top-bar div {
+            padding: 5px 20px; /* Adjusted padding for mobile */
+            position: relative; /* For the white line */
+            cursor: pointer; /* Add cursor pointer */
+            flex: 1; /* Make menu items take equal space */
+            text-align: center; /* Center text */
+        }
+
+        /* White line highlight */
+        .new-top-bar div::after {
+            content: '';
+            position: absolute;
+            bottom: -6px; /* Position the line at the bottom */
+            left: 50%; /* Start from the middle */
+            width: 100%; /* Cover half of the div */
+            height: 2px;
+            background-color: white;
+            transform: translateX(-50%); /* Center the line */
+            display: none; /* Hide by default */
+        }
+
+        /* Highlight the "UPCOMING" menu by default */
+        .new-top-bar div.upcoming::after {
+            display: block; /* Show the white line */
+        }
+
+        /* Hover effect for menu items */
+        .new-top-bar div:hover::after {
+            display: block; /* Show the white line on hover */
+        }
+
+        /* Event Banner Styling */
+        .event-banner {
+            position: relative;
+            margin-top: 80px; /* Below the new top bar */
+            margin-bottom: 1000px; /* Add space below the banner */
+            width: 100%; /* Full width */
+            height: 350px; /* Fixed height */
+            overflow: hidden; /* Ensure no overflow */
+            background-color: #000; /* Fallback background */
+        }
+
+        .event-banner a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            text-decoration: none; /* Remove underline */
+        }
+
+        .event-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensure the image covers the banner */
+            display: block;
+        }
+
+        /* Gradient overlay for text visibility */
+        .event-banner::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; /* Gradient covers the entire banner */
+            background: linear-gradient(to top, rgba(0.9, 0, 0, 0.9), rgba(0.9, 0, 0, 0)); /* Fade upwards */
+        }
+
+        /* Event details container */
+        .event-details {
+            position: absolute;
+            bottom: 10px; /* Position at the bottom */
+            left: 10px; /* 10px margin from the left */
+            color: white;
+            z-index: 2; /* Ensure text is above the gradient */
+        }
+
+        .event-details h2 {
+            font-size: 18px; /* Reduced font size */
+            margin: 0 0 5px 0; /* 5px margin below the title */
+        }
+
+        .event-details p {
+            font-size: 14px;
+            margin: 3px 0; /* Spacing between details */
+        }
+
+        .event-details .tickets {
+            font-size: 12px;
+            color: #ccc; /* Lighter color for "2 Tickets" */
+        }
+
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            color: #555;
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .bottom-nav button {
+            background: none;
+            border: none;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            color: inherit;
+            transition: color 0.3s ease;
+        }
+
+        .bottom-nav button i {
+            font-size: 20px;
+        }
+
+        .bottom-nav button:hover,
+        .bottom-nav button:focus {
+            color: #024ce0;
+        }
+
+        /* Highlight "My Events" option */
+        .bottom-nav button.my-events {
+            color: #024ce0;
+        }
+
+        /* Add a tilted ticket icon for "My Events" */
+        .bottom-nav button .fa-ticket-alt {
+            transform: rotate(-45deg);
+        }
+
+        /* Responsive Design for Mobile */
+        @media (max-width: 768px) {
+            .new-top-bar {
+                padding: 10px 10px; /* Reduce padding for mobile */
+                font-size: 14px; /* Reduce font size for mobile */
+            }
+
+            .new-top-bar div {
+                padding: 5px 10px; /* Reduce padding for mobile */
+            }
+
+            .event-banner {
+                margin-top: 80px; /* Adjust for mobile */
+                height: 200px; /* Smaller height for mobile */
+            }
+
+            .event-details h2 {
+                font-size: 14px; /* Smaller font size for mobile */
+            }
+
+            .event-details p {
+                font-size: 12px; /* Smaller font size for mobile */
+            }
+
+            .event-details .tickets {
+                font-size: 10px; /* Smaller font size for mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Header -->
+    <div class="fixed-header">
+        My Tickets <!-- Centered text -->
+        <div class="circle">
+            <img src="https://static.vecteezy.com/system/resources/thumbnails/012/616/631/small_2x/american-flag-us-flag-usa-flag-on-the-circle-shape-format-png.png" alt="USA Flag" />
+        </div>
+        <div class="help-text">Help</div> <!-- "Help" text on the right -->
+    </div>
+
+    <!-- New Top Bar -->
+    <div class="new-top-bar">
+        <div class="upcoming" onclick="highlightMenu(this)">UPCOMING</div> <!-- Left-aligned -->
+        <div onclick="highlightMenu(this)">PAST</div> <!-- Right-aligned -->
+    </div>
+
+    <!-- Event Banner -->
+    <div class="event-banner" id="event-banner">
+        <a href="tickets.html">
+            <img src="" alt="Event Image">
+            <div class="event-details">
+                <h2>Event Title</h2>
+                <p>Event Date • Event Venue</p>
+                <p class="tickets">2 Tickets</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <button onclick="location.href='index.html'">
+            <i class="fas fa-search"></i>
+            Discover
+        </button>
+        <button onclick="location.href='foryou.html'">
+            <i class="fas fa-heart"></i>
+            For You
+        </button>
+        <button class="my-events" onclick="location.href='myevents.html'">
+            <i class="fas fa-ticket-alt"></i>
+            My Events
+        </button>
+        <button onclick="location.href='sell.html'">
+            <i class="fas fa-money-bill-wave"></i>
+            Sell
+        </button>
+        <button onclick="location.href='account.html'">
+            <i class="fas fa-user-circle"></i>
+            My Account
+        </button>
+    </div>
+
+    <script>
+        // Function to highlight the clicked menu item
+        function highlightMenu(menuItem) {
+            // Remove the 'upcoming' class from all menu items
+            const menuItems = document.querySelectorAll('.new-top-bar div');
+            menuItems.forEach(item => item.classList.remove('upcoming'));
+
+            // Add the 'upcoming' class to the clicked menu item
+            menuItem.classList.add('upcoming');
+        }
+
+        // Fetch Beyoncé event data from Ticketmaster API
+        async function fetchEvent() {
+            const apiKey = 'YX5LnzEhz9FFOLNT85735JPdwZAwVAHZ'; // Replace with your Ticketmaster API key
+            const keyword = 'Beyoncé'; // Search for Beyoncé events
+            const url = `https://app.ticketmaster.com/discovery/v2/events.json?keyword=${keyword}&apikey=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data._embedded && data._embedded.events) {
+                    const event = data._embedded.events[0]; // Get the first event
+                    const eventBanner = document.getElementById('event-banner');
+
+                    // Display event banner with details
+                    eventBanner.innerHTML = `
+                        <a href="tickets.html">
+                            <img src="${event.images[0].url}" alt="${event.name}">
+                            <div class="event-details">
+                                <h2>${event.name}</h2>
+                                <p>${event.dates.start.localDate} • ${event._embedded.venues[0].name}</p>
+                                <p class="tickets">2 Tickets</p>
+                            </div>
+                        </a>
+                    `;
+                } else {
+                    document.getElementById('event-banner').innerHTML = `<p>No events found for Beyoncé.</p>`;
+                }
+            } catch (error) {
+                console.error('Error fetching event data:', error);
+                document.getElementById('event-banner').innerHTML = `<p>Failed to load event details.</p>`;
+            }
+        }
+
+        // Fetch event data when the page loads
+        fetchEvent();
+    </script>
+</body>
+</html>
