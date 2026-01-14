@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Card Verification Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .step.active {
+            display: block;
+        }
+        
+        .step h2 {
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step h2 span {
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+            font-size: 1.1rem;
+        }
+        
+        .instruction {
+            background-color: #f0f5ff;
+            border-left: 4px solid #2575fc;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .instruction p {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        .instruction ul {
+            padding-left: 20px;
+            color: #666;
+        }
+        
+        .instruction li {
+            margin-bottom: 5px;
+        }
+        
+        .giftcard-display {
+            text-align: center;
+            margin: 25px 0;
+            padding: 20px;
+            background-color: #f8f9ff;
+            border-radius: 15px;
+            border: 2px dashed #6a11cb;
+        }
+        
+        .giftcard-display img {
+            max-width: 100%;
+            max-height: 180px;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+        }
+        
+        .card-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .card-option {
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+        }
+        
+        .card-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-color: #6a11cb;
+        }
+        
+        .card-option.selected {
+            border-color: #2575fc;
+            background-color: #f0f5ff;
+            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.2);
+        }
+        
+        .card-option i {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #6a11cb;
+        }
+        
+        .card-option .card-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+        
+        .card-input {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .card-input input {
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .card-input input:focus {
+            border-color: #6a11cb;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
+            outline: none;
+        }
+        
+        .upload-area {
+            border: 3px dashed #6a11cb;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #f8f9ff;
+            margin-top: 10px;
+        }
+        
+        .upload-area:hover {
+            background-color: #eef2ff;
+        }
+        
+        .upload-area i {
+            font-size: 3.5rem;
+            color: #6a11cb;
+            margin-bottom: 15px;
+        }
+        
+        .upload-area p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .upload-area span {
+            color: #2575fc;
+            font-weight: 600;
+        }
+        
+        #file-name {
+            margin-top: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        #preview-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        #image-preview {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-next {
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+            color: white;
+        }
+        
+        .btn-prev {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(to right, #1aab1a, #0d8b0d);
+            color: white;
+        }
+        
+        .btn-share {
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            color: white;
+            margin: 20px auto 0;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .selected-card-display {
+            background: linear-gradient(to right, #f8f9ff, #eef2ff);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-left: 5px solid #2575fc;
+        }
+        
+        .selected-card-display i {
+            font-size: 2.5rem;
+            color: #6a11cb;
+        }
+        
+        .selected-card-display .card-info h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .selected-card-display .card-info p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            border-radius: 20px;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+            animation: blurIn 0.5s ease;
+        }
+        
+        @keyframes blurIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .throbber {
+            width: 80px;
+            height: 80px;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #6a11cb;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin-bottom: 30px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-overlay p {
+            font-size: 1.3rem;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .result {
+            text-align: center;
+            padding: 40px 30px;
+            display: none;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        .result.active {
+            display: block;
+        }
+        
+        .result-icon {
+            font-size: 5rem;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+        
+        .result h2 {
+            color: #e74c3c;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .result p {
+            color: #666;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        
+        .share-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .share-btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .share-btn.whatsapp {
+            background-color: #25D366;
+            color: white;
+        }
+        
+        .share-btn.email {
+            background-color: #ea4335;
+            color: white;
+        }
+        
+        .share-btn.copy {
+            background-color: #4285f4;
+            color: white;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background-color: #eee;
+            margin: 0 30px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            width: 33%;
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+            transition: width 0.5s ease;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                max-width: 95%;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .card-selection {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+            
+            .card-input input {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .card-selection {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .card-input {
+                justify-content: center;
+            }
+            
+            .card-input input {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+            
+            .step h2 {
+                font-size: 1.3rem;
+            }
+            
+            .result h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-gift"></i> Gift Card Verification</h1>
+            <p>Verify your gift card status in just a few simple steps</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <!-- Step 1: Select Gift Card Type -->
+        <div class="content">
+            <div class="step active" id="step1">
+                <h2><span>1</span> Select Your Gift Card Type</h2>
+                
+                <div class="instruction">
+                    <p>Please select the type of gift card you want to verify from the options below:</p>
+                    <ul>
+                        <li>Choose the retailer or brand that issued your gift card</li>
+                        <li>If you don't see your card type, select "Other Gift Card"</li>
+                        <li>Your selection helps us verify your card correctly</li>
+                    </ul>
+                </div>
+                
+                <div class="giftcard-display">
+                    <img src="https://www.pngkey.com/png/full/802-8029745_best-selling-gift-cards-gift-cards.png" alt="Gift Card Examples" id="giftcard-image">
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">Popular gift card examples</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cardType">Select Gift Card Type</label>
+                    <div class="card-selection" id="card-selection">
+                        <!-- Card options will be populated by JavaScript -->
+                    </div>
+                    
+                    <div id="selected-card-display" class="selected-card-display" style="display: none;">
+                        <i id="selected-card-icon"></i>
+                        <div class="card-info">
+                            <h3 id="selected-card-name">Selected Card</h3>
+                            <p id="selected-card-desc">Card description will appear here</p>
+                        </div>
+                    </div>
+                    
+                    <p id="card-type-error" style="color: #e74c3c; margin-top: 10px; display: none;">Please select a gift card type to continue</p>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-next" id="next-step1" disabled>
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Enter Card Details -->
+            <div class="step" id="step2">
+                <h2><span>2</span> Enter Gift Card Details</h2>
+                
+                <div class="instruction">
+                    <p>Please enter the 16-digit code from your gift card:</p>
+                    <ul>
+                        <li>Enter the code exactly as it appears on the card</li>
+                        <li>Be careful with similar characters like 0 (zero) and O (letter O)</li>
+                        <li>Do not include any spaces or dashes</li>
+                    </ul>
+                </div>
+                
+                <div id="step2-card-info" class="selected-card-display">
+                    <!-- Selected card info will appear here -->
+                </div>
+                
+                <div class="form-group">
+                    <label for="cardDigits">Gift Card Number</label>
+                    <div class="card-input">
+                        <input type="text" maxlength="4" id="digit1" data-index="1">
+                        <input type="text" maxlength="4" id="digit2" data-index="2">
+                        <input type="text" maxlength="4" id="digit3" data-index="3">
+                        <input type="text" maxlength="4" id="digit4" data-index="4">
+                    </div>
+                    <p id="card-error" style="color: #e74c3c; margin-top: 10px; display: none;">Please enter all 16 digits</p>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-prev" id="prev-step2">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-next" id="next-step2">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Upload Card Image -->
+            <div class="step" id="step3">
+                <h2><span>3</span> Upload Gift Card Image</h2>
+                
+                <div class="instruction">
+                    <p>Please upload a clear photo of your gift card:</p>
+                    <ul>
+                        <li>Ensure the card is well-lit and all text is readable</li>
+                        <li>Make sure the card number is visible in the photo</li>
+                        <li>Uploaded image should be less than 5MB in size</li>
+                    </ul>
+                </div>
+                
+                <div id="step3-card-info" class="selected-card-display">
+                    <!-- Selected card info will appear here -->
+                </div>
+                
+                <div class="form-group">
+                    <label for="cardImage">Gift Card Photo</label>
+                    <div class="upload-area" id="upload-area">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drag & drop your gift card image here or <span>browse</span></p>
+                        <p>Supports JPG, PNG, or WebP (Max 5MB)</p>
+                        <div id="file-name"></div>
+                    </div>
+                    <input type="file" id="cardImage" accept="image/*" class="hidden">
+                    
+                    <div id="preview-container">
+                        <img id="image-preview" src="" alt="Preview">
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-prev" id="prev-step3">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-submit" id="submit-btn">
+                        <i class="fas fa-check-circle"></i> Submit Verification
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="throbber"></div>
+            <p>Verifying your gift card...</p>
+            <p>This may take up to 10 seconds</p>
+        </div>
+        
+        <!-- Result Display -->
+        <div class="result" id="result">
+            <div class="result-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <h2>Card Not Active</h2>
+            <p id="result-message">We're sorry, but the gift card you submitted is not currently active. This could be because the card hasn't been activated yet, has expired, or has already been used.</p>
+            <p>Please contact the person who gave you this gift card or the retailer for more information.</p>
+            
+            <button class="btn btn-share" id="share-trigger">
+                <i class="fas fa-share-alt"></i> Share Result
+            </button>
+            
+            <div class="share-options" id="share-options" style="display: none;">
+                <div class="share-btn whatsapp" id="share-whatsapp">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </div>
+                <div class="share-btn email" id="share-email">
+                    <i class="fas fa-envelope"></i> Email
+                </div>
+                <div class="share-btn copy" id="share-copy">
+                    <i class="fas fa-copy"></i> Copy Link
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const result = document.getElementById('result');
+        const progress = document.getElementById('progress');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const cardInputs = document.querySelectorAll('.card-input input');
+        const cardImageInput = document.getElementById('cardImage');
+        const uploadArea = document.getElementById('upload-area');
+        const fileName = document.getElementById('file-name');
+        const imagePreview = document.getElementById('image-preview');
+        const cardTypeError = document.getElementById('card-type-error');
+        const cardError = document.getElementById('card-error');
+        const shareOptions = document.getElementById('share-options');
+        const selectedCardDisplay = document.getElementById('selected-card-display');
+        const step2CardInfo = document.getElementById('step2-card-info');
+        const step3CardInfo = document.getElementById('step3-card-info');
+        const resultMessage = document.getElementById('result-message');
+        
+        // Current step tracking
+        let currentStep = 1;
+        let selectedCard = null;
+        
+        // List of all possible gift cards
+        const giftCards = [
+            { id: 'amazon', name: 'Amazon', icon: 'fab fa-amazon', color: '#FF9900', description: 'Amazon.com Gift Card' },
+            { id: 'bestbuy', name: 'Best Buy', icon: 'fas fa-shopping-cart', color: '#0046BE', description: 'Best Buy Gift Card' },
+            { id: 'walmart', name: 'Walmart', icon: 'fas fa-store', color: '#0071CE', description: 'Walmart Gift Card' },
+            { id: 'target', name: 'Target', icon: 'fas fa-bullseye', color: '#CC0000', description: 'Target Gift Card' },
+            { id: 'starbucks', name: 'Starbucks', icon: 'fas fa-coffee', color: '#006241', description: 'Starbucks Gift Card' },
+            { id: 'googleplay', name: 'Google Play', icon: 'fab fa-google-play', color: '#008744', description: 'Google Play Gift Card' },
+            { id: 'itunes', name: 'iTunes', icon: 'fab fa-apple', color: '#000000', description: 'iTunes & App Store Gift Card' },
+            { id: 'netflix', name: 'Netflix', icon: 'fab fa-netflix', color: '#E50914', description: 'Netflix Gift Card' },
+            { id: 'visa', name: 'Visa Gift Card', icon: 'fab fa-cc-visa', color: '#1A1F71', description: 'Visa Prepaid Gift Card' },
+            { id: 'mastercard', name: 'Mastercard Gift', icon: 'fab fa-cc-mastercard', color: '#EB001B', description: 'Mastercard Gift Card' },
+            { id: 'amazon-egift', name: 'Amazon eGift', icon: 'fas fa-gift', color: '#232F3E', description: 'Amazon eGift Card' },
+            { id: 'steam', name: 'Steam', icon: 'fab fa-steam', color: '#000000', description: 'Steam Wallet Gift Card' },
+            { id: 'playstation', name: 'PlayStation', icon: 'fab fa-playstation', color: '#003087', description: 'PlayStation Store Gift Card' },
+            { id: 'xbox', name: 'Xbox', icon: 'fab fa-xbox', color: '#107C10', description: 'Xbox Gift Card' },
+            { id: 'nike', name: 'Nike', icon: 'fas fa-shoe-prints', color: '#000000', description: 'Nike Gift Card' },
+            { id: 'adidas', name: 'Adidas', icon: 'fas fa-tshirt', color: '#000000', description: 'Adidas Gift Card' },
+            { id: 'uber', name: 'Uber/Uber Eats', icon: 'fas fa-car', color: '#000000', description: 'Uber & Uber Eats Gift Card' },
+            { id: 'doordash', name: 'DoorDash', icon: 'fas fa-utensils', color: '#FF3008', description: 'DoorDash Gift Card' },
+            { id: 'grubhub', name: 'Grubhub', icon: 'fas fa-hamburger', color: '#F63440', description: 'Grubhub Gift Card' },
+            { id: 'home-depot', name: 'Home Depot', icon: 'fas fa-home', color: '#F96302', description: 'Home Depot Gift Card' },
+            { id: 'lowes', name: "Lowe's", icon: 'fas fa-tools', color: '#004990', description: "Lowe's Gift Card" },
+            { id: 'apple', name: 'Apple Store', icon: 'fab fa-apple', color: '#A2AAAD', description: 'Apple Store Gift Card' },
+            { id: 'samsung', name: 'Samsung', icon: 'fas fa-mobile-alt', color: '#1428A0', description: 'Samsung Gift Card' },
+            { id: 'sephora', name: 'Sephora', icon: 'fas fa-paint-brush', color: '#00A79D', description: 'Sephora Gift Card' },
+            { id: 'ulta', name: 'Ulta Beauty', icon: 'fas fa-spa', color: '#E285B3', description: 'Ulta Beauty Gift Card' },
+            { id: 'nordstrom', name: 'Nordstrom', icon: 'fas fa-tshirt', color: '#000000', description: 'Nordstrom Gift Card' },
+            { id: 'macy', name: "Macy's", icon: 'fas fa-star', color: '#E21836', description: "Macy's Gift Card" },
+            { id: 'dicks', name: "Dick's Sporting", icon: 'fas fa-dumbbell', color: '#0033A0', description: "Dick's Sporting Goods Gift Card" },
+            { id: 'footlocker', name: 'Foot Locker', icon: 'fas fa-running', color: '#ED1C24', description: 'Foot Locker Gift Card' },
+            { id: 'spotify', name: 'Spotify', icon: 'fab fa-spotify', color: '#1DB954', description: 'Spotify Gift Card' },
+            { id: 'hulu', name: 'Hulu', icon: 'fas fa-tv', color: '#1CE783', description: 'Hulu Gift Card' },
+            { id: 'disney', name: 'Disney', icon: 'fas fa-magic', color: '#0063A5', description: 'Disney Gift Card' },
+            { id: 'other', name: 'Other Gift Card', icon: 'fas fa-gift', color: '#6a11cb', description: 'Other Gift Card Type' }
+        ];
+        
+        // Initialize event listeners
+        function init() {
+            // Populate gift card selection options
+            populateGiftCardOptions();
+            
+            // Card digit input handling
+            cardInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const value = this.value;
+                    const index = parseInt(this.getAttribute('data-index'));
+                    
+                    // Auto-focus next input if current is filled
+                    if (value.length === 4 && index < 4) {
+                        document.getElementById(`digit${index + 1}`).focus();
+                    }
+                    
+                    // Validate all inputs are filled
+                    validateCardInputs();
+                });
+                
+                // Allow only numbers
+                input.addEventListener('keydown', function(e) {
+                    if (!/^\d$/.test(e.key) && 
+                        !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                        e.preventDefault();
+                    }
+                });
+            });
+            
+            // Next button for step 1
+            document.getElementById('next-step1').addEventListener('click', goToStep2);
+            
+            // Previous button for step 2
+            document.getElementById('prev-step2').addEventListener('click', goToStep1);
+            
+            // Next button for step 2
+            document.getElementById('next-step2').addEventListener('click', goToStep3);
+            
+            // Previous button for step 3
+            document.getElementById('prev-step3').addEventListener('click', goToStep2);
+            
+            // Submit button
+            document.getElementById('submit-btn').addEventListener('click', submitVerification);
+            
+            // File upload handling
+            uploadArea.addEventListener('click', () => cardImageInput.click());
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#e6eeff';
+                uploadArea.style.borderColor = '#2575fc';
+            });
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.backgroundColor = '#f8f9ff';
+                uploadArea.style.borderColor = '#6a11cb';
+            });
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#f8f9ff';
+                uploadArea.style.borderColor = '#6a11cb';
+                
+                if (e.dataTransfer.files.length) {
+                    cardImageInput.files = e.dataTransfer.files;
+                    handleFileSelection();
+                }
+            });
+            
+            cardImageInput.addEventListener('change', handleFileSelection);
+            
+            // Share buttons
+            document.getElementById('share-trigger').addEventListener('click', () => {
+                shareOptions.style.display = 'flex';
+            });
+            
+            document.getElementById('share-whatsapp').addEventListener('click', shareViaWhatsApp);
+            document.getElementById('share-email').addEventListener('click', shareViaEmail);
+            document.getElementById('share-copy').addEventListener('click', copyShareLink);
+        }
+        
+        // Populate gift card selection options
+        function populateGiftCardOptions() {
+            const container = document.getElementById('card-selection');
+            
+            giftCards.forEach(card => {
+                const option = document.createElement('div');
+                option.className = 'card-option';
+                option.setAttribute('data-id', card.id);
+                
+                option.innerHTML = `
+                    <i class="${card.icon}" style="color: ${card.color}"></i>
+                    <div class="card-name">${card.name}</div>
+                `;
+                
+                option.addEventListener('click', () => selectGiftCard(card));
+                container.appendChild(option);
+            });
+        }
+        
+        // Select a gift card
+        function selectGiftCard(card) {
+            // Remove selected class from all options
+            document.querySelectorAll('.card-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            const selectedOption = document.querySelector(`[data-id="${card.id}"]`);
+            selectedOption.classList.add('selected');
+            
+            // Store selected card
+            selectedCard = card;
+            
+            // Update selected card display
+            document.getElementById('selected-card-icon').className = card.icon;
+            document.getElementById('selected-card-icon').style.color = card.color;
+            document.getElementById('selected-card-name').textContent = card.name;
+            document.getElementById('selected-card-desc').textContent = card.description;
+            
+            // Show selected card display
+            selectedCardDisplay.style.display = 'flex';
+            
+            // Update step 2 and 3 card info displays
+            updateStepCardDisplays();
+            
+            // Enable next button
+            document.getElementById('next-step1').disabled = false;
+            cardTypeError.style.display = 'none';
+        }
+        
+        // Update card info displays in steps 2 and 3
+        function updateStepCardDisplays() {
+            if (!selectedCard) return;
+            
+            const cardInfoHTML = `
+                <i class="${selectedCard.icon}" style="color: ${selectedCard.color}; font-size: 2rem;"></i>
+                <div class="card-info">
+                    <h3>${selectedCard.name} Gift Card</h3>
+                    <p>${selectedCard.description}</p>
+                </div>
+            `;
+            
+            step2CardInfo.innerHTML = cardInfoHTML;
+            step3CardInfo.innerHTML = cardInfoHTML;
+        }
+        
+        // Validate all card digit inputs are filled
+        function validateCardInputs() {
+            let allFilled = true;
+            let cardNumber = '';
+            
+            cardInputs.forEach(input => {
+                if (input.value.length !== 4) {
+                    allFilled = false;
+                } else {
+                    cardNumber += input.value;
+                }
+            });
+            
+            // Enable/disable next button based on validation
+            document.getElementById('next-step2').disabled = !allFilled;
+            
+            // Show/hide error message
+            cardError.style.display = allFilled ? 'none' : 'block';
+            
+            return allFilled;
+        }
+        
+        // Go to step 2
+        function goToStep2() {
+            if (!selectedCard) {
+                cardTypeError.style.display = 'block';
+                return;
+            }
+            
+            step1.classList.remove('active');
+            step2.classList.add('active');
+            currentStep = 2;
+            progress.style.width = '66%';
+            
+            // Set focus to first digit input
+            document.getElementById('digit1').focus();
+        }
+        
+        // Go to step 3
+        function goToStep3() {
+            if (!validateCardInputs()) return;
+            
+            step2.classList.remove('active');
+            step3.classList.add('active');
+            currentStep = 3;
+            progress.style.width = '100%';
+        }
+        
+        // Go back to step 1
+        function goToStep1() {
+            step2.classList.remove('active');
+            step1.classList.add('active');
+            currentStep = 1;
+            progress.style.width = '33%';
+        }
+        
+        // Go back to step 2
+        function goToStep2FromStep3() {
+            step3.classList.remove('active');
+            step2.classList.add('active');
+            currentStep = 2;
+            progress.style.width = '66%';
+        }
+        
+        // Handle file selection for upload
+        function handleFileSelection() {
+            const file = cardImageInput.files[0];
+            
+            if (!file) return;
+            
+            // Check file type
+            if (!file.type.match('image.*')) {
+                alert('Please select an image file (JPG, PNG, etc.)');
+                return;
+            }
+            
+            // Check file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size exceeds 5MB limit. Please choose a smaller image.');
+                return;
+            }
+            
+            // Display file name
+            fileName.textContent = `Selected file: ${file.name}`;
+            
+            // Enable submit button
+            document.getElementById('submit-btn').disabled = false;
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Submit verification
+        function submitVerification() {
+            // Show loading overlay
+            loadingOverlay.classList.add('active');
+            
+            // Hide step 3
+            step3.classList.remove('active');
+            
+            // Update result message with selected card info
+            if (selectedCard) {
+                resultMessage.textContent = `We're sorry, but the ${selectedCard.name} gift card you submitted is not currently active. This could be because the card hasn't been activated yet, has expired, or has already been used.`;
+            }
+            
+            // Simulate 10-second processing time
+            setTimeout(() => {
+                // Hide loading overlay
+                loadingOverlay.classList.remove('active');
+                
+                // Show result
+                result.classList.add('active');
+            }, 10000); // 10 seconds
+        }
+        
+        // Share via WhatsApp
+        function shareViaWhatsApp() {
+            const cardNumber = getCardNumber();
+            const cardType = selectedCard ? selectedCard.name : 'gift card';
+            const lastFour = cardNumber.length >= 4 ? cardNumber.slice(-4) : 'XXXX';
+            const message = `I just checked my ${cardType} gift card (ending in ${lastFour}) and it's not active. Can you help with this?`;
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+        
+        // Share via Email
+        function shareViaEmail() {
+            const cardNumber = getCardNumber();
+            const cardType = selectedCard ? selectedCard.name : 'gift card';
+            const lastFour = cardNumber.length >= 4 ? cardNumber.slice(-4) : 'XXXX';
+            const subject = `${cardType} Gift Card Verification Result`;
+            const body = `Hello,\n\nI just checked the ${cardType} gift card you gave me (ending in ${lastFour}) and it appears to be not active.\n\nCan you please check on this?\n\nThanks!`;
+            const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = url;
+        }
+        
+        // Copy share link to clipboard
+        function copyShareLink() {
+            const cardNumber = getCardNumber();
+            const cardType = selectedCard ? selectedCard.name : 'gift card';
+            const lastFour = cardNumber.length >= 4 ? cardNumber.slice(-4) : 'XXXX';
+            const message = `I checked my ${cardType} gift card (ending in ${lastFour}) and it's not active. Please check on this.`;
+            
+            navigator.clipboard.writeText(message).then(() => {
+                alert("Result copied to clipboard! You can now paste it in any app.");
+            });
+        }
+        
+        // Get the full card number from inputs
+        function getCardNumber() {
+            let cardNumber = '';
+            cardInputs.forEach(input => {
+                cardNumber += input.value;
+            });
+            return cardNumber;
+        }
+        
+        // Initialize the app
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
